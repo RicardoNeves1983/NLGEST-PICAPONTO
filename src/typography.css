@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root,body,button,input,select,textarea{font-family:'Montserrat',Arial,sans-serif;font-weight:300}
+body{letter-spacing:-.01em}
+h1,h2,h3,.welcome h2,.stat strong,.date-card strong,.big-time,.auth-panel h1,.portal-hero h2,.p-stat strong{
+ font-family:'Montserrat',Arial,sans-serif!important;
+ font-weight:300!important;
+ letter-spacing:-.025em
+}
+strong,b{font-weight:500}
+button,.primary,.portal-action,.open-portal{font-family:'Montserrat',Arial,sans-serif;font-weight:500}
+.eyebrow,header small,.card-head small,.portal-hero span,.portal-title small{font-weight:500;letter-spacing:.14em}

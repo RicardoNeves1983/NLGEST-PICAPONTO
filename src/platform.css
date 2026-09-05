@@ -1,0 +1,16 @@
+.platform-page{min-height:100vh;display:flex;flex-direction:column}
+.platform-header-actions{display:flex;align-items:center;gap:10px}
+.platform-table .tr{grid-template-columns:1.4fr .9fr .9fr .9fr .9fr}
+.platform-table .tr>span:first-child{display:grid;gap:2px}
+.platform-table .tr>span:first-child small{color:#8c8379;font-size:11px}
+.billing-badge{font-style:normal;padding:5px 8px;border-radius:20px;font-size:10px;white-space:nowrap}
+.billing-badge.trial{background:#fff2d9;color:#8e651f}
+.billing-badge.active{background:#e6f3eb;color:#347651}
+.billing-badge.overdue{background:#fdecd9;color:#a4620f}
+.billing-badge.suspended{background:#f2ebe9;color:#8f5a4a}
+.billing-badge.cancelled{background:#efece7;color:#736a5d}
+.suspend-access{width:36px;height:36px;border:1px solid #f0d9b8;border-radius:8px;background:#fff;color:#a4620f;display:grid;place-items:center;cursor:pointer}
+.suspend-access:hover{background:#fdf3e4}
+.suspend-access.reactivate{border-color:#bfe0cc;color:#347651}
+.suspend-access.reactivate:hover{background:#eaf6ef}
+@media(max-width:900px){.platform-table .tr{min-width:640px}}
