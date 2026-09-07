@@ -62,3 +62,7 @@ Execute `supabase/company_suspension_migration.sql` uma vez no SQL Editor. No Pa
 ## Atualização 0.25 — Colaboradores sem centro de custo obrigatório
 
 Execute `supabase/employee_cost_centers_migration.sql` uma vez no SQL Editor. Deixa de ser obrigatório atribuir um centro de custo ao criar um colaborador, e cada colaborador pode agora ficar alocado a vários centros de custo em simultâneo (ou a nenhum). A atribuição de centros faz-se ao criar o colaborador ou ao editar a sua ficha, com seleção múltipla (Ctrl/Cmd+clique para selecionar vários).
+
+## Atualização 0.26 — Aprovação de correções manuais de horas e picagens
+
+Execute `supabase/time_corrections_migration.sql` uma vez no SQL Editor. Um colaborador deixa de conseguir alterar diretamente as suas horas: tanto editar um dia em "Horários e horas" como usar "Adicionar manual"/"Alterar horário" em "Picar ponto" passam a criar um pedido de correção, que fica pendente até um administrador o aprovar ou rejeitar em **Aprovações → Correções de horário / Correções de picagem**. O registo de ponto normal por GPS ("Registar entrada/saída") não é afetado, continua imediato. Uma correção já aprovada pode ser revertida pelo administrador a qualquer momento.
