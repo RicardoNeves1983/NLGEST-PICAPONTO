@@ -16,7 +16,9 @@ export async function loadOwnProfile(){
  const own=Array.isArray(r.data)?r.data[0]:r.data;if(!own)throw new Error('Perfil de acesso não encontrado');return own
 }
 
-export async function loadOwnCompany(){const r=await supabase.from('companies').select('id,name').single();if(r.error)throw r.error;return r.data}
+export async function loadOwnCompany(){const r=await supabase.from('companies').select('id,name,slug,logo_url,primary_color').single();if(r.error)throw r.error;return r.data}
+export async function loadCompanyBranding(slug:string){const r=await supabase.rpc('company_branding',{p_slug:slug});if(r.error)throw r.error;const row=Array.isArray(r.data)?r.data[0]:r.data;return (row||null) as {name:string;logo_url:string|null;primary_color:string|null}|null}
+export async function updateCompanyBranding(companyId:string,data:{logoUrl:string;primaryColor:string}){const r=await supabase.from('companies').update({logo_url:data.logoUrl||null,primary_color:data.primaryColor||null}).eq('id',companyId);if(r.error)throw r.error}
 
 export async function loadCompanyData(){
  const [clients,centers,employees,punches,profiles,employeeCenters]=await Promise.all([
