@@ -70,3 +70,15 @@ Execute `supabase/time_corrections_migration.sql` uma vez no SQL Editor. Um cola
 ## Atualização 0.28 — Identidade visual por empresa cliente
 
 Execute `supabase/branding_migration.sql` uma vez no SQL Editor. Cada empresa cliente pode agora ter o seu próprio logótipo e cor, em vez da marca NLGest Ponto por omissão: em **Configuração**, o administrador da empresa tem um novo cartão "Identidade visual" onde define o URL do logótipo e a cor principal, e onde encontra a ligação de entrada própria da sua empresa (algo como `.../?empresa=<slug-da-empresa>`) para enviar aos colaboradores. Essa ligação faz o ecrã de entrada mostrar logo o logótipo certo antes de iniciar sessão, e fica memorizada no dispositivo depois do primeiro acesso. Dentro da aplicação, o logótipo substitui o texto "GESTÃO DE PONTO" na barra lateral e a cor principal passa a colorir os botões e destaques. Esta migração já aplica o logótipo e a cor (verde) à Companhia das Obras, o primeiro cliente a pedir identidade visual própria; o ficheiro do logótipo é entregue com esta atualização em `public/brands/companhia-das-obras.png`.
+
+## Atualização 0.29 — Obras: fiscalização e qualidade
+
+Execute `supabase/works_migration.sql` uma vez no SQL Editor do Supabase. Aparece o separador **Obras**, visível para todos os perfis exceto Colaborador. Cada obra tem cinco áreas:
+
+- **Resumo**: dados gerais (tipo de obra, morada, cliente, dono de obra, empreiteiro geral, fiscal, diretor de obra, datas e estado) e os indicadores calculados automaticamente: total de pontos, OK, NOK, pendentes, N/A, % OK sobre os pontos aplicáveis, NOK em aberto e correções em atraso.
+- **Checklist**: pontos de inspeção com código automático (ex.: `IMP-001`), especialidade, zona, critério, resultado OK/NOK/Pendente/N/A e, quando NOK, anomalia, prioridade, responsável, estado e prazo da correção, e reinspeção. Uma reinspeção "Aprovado" fecha a correção. Podem anexar-se fotografias diretamente a cada ponto.
+- **Especialidades**: as 26 especialidades (preparação e estaleiro até ensaios e vistorias) são criadas automaticamente em cada obra nova, com estado da execução, % executado, responsável/subempreiteiro, datas previstas e reais, data da última inspeção e NOK em aberto.
+- **Documentos e validades**: seguros, licenças, certificados, etc., com ficheiro anexado opcional e aviso "A expirar em 30 dias" ou "Expirado".
+- **Fotografias**: galeria da obra. As fotos tiradas no telemóvel são reduzidas antes do envio e guardadas num bucket privado do Supabase Storage (`obras`).
+
+Só o Administrador e a Administração podem eliminar uma obra inteira.

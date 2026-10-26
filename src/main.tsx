@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {createRoot} from 'react-dom/client'
-import {AlertTriangle, Ban, Building2, Check, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, Copy, Download, KeyRound, LayoutDashboard, LogOut, MapPin, Menu, Pencil, Play, Plus, Settings, ShieldCheck, Trash2, UserRound, Users, WalletCards, X} from 'lucide-react'
+import {AlertTriangle, Ban, Building2, Check, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, Copy, Download, HardHat, KeyRound, LayoutDashboard, LogOut, MapPin, Menu, Pencil, Play, Plus, Settings, ShieldCheck, Trash2, UserRound, Users, WalletCards, X} from 'lucide-react'
 import './styles.css'
 import './forms.css'
 import './platform.css'
@@ -8,11 +8,12 @@ import type {Session} from '@supabase/supabase-js'
 import {supabase, supabaseConfigured} from './supabase'
 import {archiveEmployee, checkPlatformAdmin, createCompanyAdminInvite, createCompanySubscriptionLink, createEmployeeInvite, createPlatformCompany, decideAbsence, decidePunchCorrection, decideTimeCorrection, deletePlatformCompany, ensureCompany, insertCenter, insertClient, insertEmployee, insertPunch, loadCompanyAbsences, loadCompanyBranding, loadCompanyData, loadCompanyPunchCorrections, loadCompanyTimeCorrections, loadEmployeeInvites, loadOwnCompany, loadOwnProfile, loadPlatformCompanies, loadPunchCorrections, requestPunchCorrection, revertPunchCorrection, revertTimeCorrection, setCompanyActive, updateCompanyBranding, updateEmployee, updatePlatformCompany, updateProfileAccess, updatePunch} from './data'
 import Portal from './Portal'
+import WorksPage from './Works'
 import './typography.css'
 
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}
 
-type Tab='inicio'|'portal'|'picagem'|'colaboradores'|'aprovacoes'|'centros'|'clientes'|'config'
+type Tab='inicio'|'portal'|'picagem'|'colaboradores'|'aprovacoes'|'obras'|'centros'|'clientes'|'config'
 type Punch={id:string;type:'Entrada'|'Saída';time:string;date?:string;place:string;accuracy?:number;employeeId?:string;adjusted?:boolean}
 type Client={id:string;name:string;nif:string;email:string;active:boolean}
 type Center={id:string;clientId:string;code:string;name:string;active:boolean}
@@ -23,7 +24,7 @@ type CompanyAdminInvite={id:string;company_id:string;code:string;expires_at:stri
 
 const nav:[Tab,string,React.ElementType][]=[
  ['inicio','Visão geral',LayoutDashboard],['portal','Portal do colaborador',UserRound],['picagem','Picar ponto',Clock3],['colaboradores','Colaboradores',Users],['aprovacoes','Aprovações',ClipboardCheck],
- ['centros','Centros de custo',WalletCards],['clientes','Clientes',Building2],['config','Configuração',Settings]
+ ['obras','Obras',HardHat],['centros','Centros de custo',WalletCards],['clientes','Clientes',Building2],['config','Configuração',Settings]
 ]
 const initialClients:Client[]=[
  {id:'c1',name:'NLGest Solutions Group',nif:'—',email:'geral@nlgest.pt',active:true},
@@ -76,7 +77,7 @@ function App({email,inviteCode,fullName,onBackToPlatform}:{email?:string;inviteC
  const activeEmployees=employees.filter(e=>e.active)
  const currentProfile=profiles.find(p=>p.email.toLowerCase()===email?.toLowerCase()),accessRole=currentProfile?.role||'company_admin',isEmployee=accessRole==='employee',linkedEmployee=currentProfile?activeEmployees.find(e=>e.profileId===currentProfile.id):undefined
  useEffect(()=>{if(isEmployee&&linkedEmployee){setPortalEmployeeId(linkedEmployee.id);if(!['portal','picagem'].includes(tab))setTab('portal')}},[isEmployee,linkedEmployee?.id])
- const visibleNav=nav.filter(([id])=>isEmployee?['portal','picagem'].includes(id):accessRole==='site_manager'?['inicio','portal','picagem','aprovacoes'].includes(id):accessRole==='hr_manager'||accessRole==='hr_admin'?id!=='config':true)
+ const visibleNav=nav.filter(([id])=>isEmployee?['portal','picagem'].includes(id):accessRole==='site_manager'?['inicio','portal','picagem','aprovacoes','obras'].includes(id):accessRole==='hr_manager'||accessRole==='hr_admin'?id!=='config':true)
  const portalEmployee=isEmployee?linkedEmployee:activeEmployees.find(e=>e.id===portalEmployeeId)||activeEmployees[0]
  const allEmployeePunches=punches.filter(p=>p.employeeId===portalEmployee?.id),today=new Date().toISOString().slice(0,10)
  const activePunches=allEmployeePunches.filter(p=>(p.date||today)===today)
@@ -100,6 +101,7 @@ function App({email,inviteCode,fullName,onBackToPlatform}:{email?:string;inviteC
     }catch(e){console.error(e);notify(isEmployee?'Não foi possível submeter o pedido de correção':'Não foi possível guardar o horário')}}}/>:
     tab==='colaboradores'?<People employees={employees} centers={centers} clients={clients} notify={notify} onOpen={id=>{setPortalEmployeeId(id);go('portal')}} onCreate={async d=>{if(!companyId)throw new Error('Empresa ainda não carregada');const e=await insertEmployee(companyId,d);setEmployees(v=>[...v,{id:e.id,name:e.full_name,role:e.job_title||'',employeeNumber:e.employee_number||'',email:e.email||'',phone:e.phone||'',weeklyHours:Number(e.weekly_hours||40),centerIds:e.centerIds,status:'Ausente',active:e.active}])}} onUpdate={async(id,d)=>{const e=await updateEmployee(id,d);setEmployees(v=>v.map(x=>x.id===id?{...x,name:e.full_name,role:e.job_title||'',employeeNumber:e.employee_number||'',email:e.email||'',phone:e.phone||'',weeklyHours:Number(e.weekly_hours||40),centerIds:e.centerIds,active:e.active}:x))}} onDelete={async id=>{await archiveEmployee(id);setEmployees(v=>v.map(e=>e.id===id?{...e,active:false}:e));if(portalEmployeeId===id)setPortalEmployeeId('')}}/>:
     tab==='aprovacoes'?<ApprovalsHub employees={employees} companyId={companyId} notify={notify}/>:
+    tab==='obras'?<WorksPage companyId={companyId} clients={clients} centers={centers} notify={notify} canDelete={['super_admin','company_admin','management'].includes(accessRole)} userName={currentProfile?.name||email?.split('@')[0]||''}/>:
     tab==='clientes'?<ClientsPage clients={clients} centers={centers} notify={notify} onCreate={async d=>{if(!companyId)throw new Error('Empresa ainda não carregada. Aguarde ou atualize a página.');const c=await insertClient(companyId,d);setClients(v=>[...v,{...c,nif:c.nif||'',email:c.email||''}])}}/>:
     tab==='centros'?<CentersPage centers={centers} clients={clients} employees={activeEmployees} notify={notify} onCreate={async d=>{if(!companyId)throw new Error('Empresa ainda não carregada. Aguarde ou atualize a página.');const c=await insertCenter(companyId,d);setCenters(v=>[...v,{id:c.id,clientId:c.client_id,code:c.code,name:c.name,active:c.active}])}}/>:
     tab==='config'?<AccessPage profiles={profiles} employees={activeEmployees} companyId={companyId} currentProfileId={currentProfile?.id} notify={notify} accessRole={accessRole} companyLogoUrl={companyLogoUrl} companyPrimaryColor={companyPrimaryColor} companySlug={companySlug} onBrandingSaved={(logoUrl,primaryColor)=>{setCompanyLogoUrl(logoUrl);setCompanyPrimaryColor(primaryColor)}} onSave={async(profileId,role,employeeId)=>{await updateProfileAccess(profileId,role,employeeId);setProfiles(v=>v.map(p=>p.id===profileId?{...p,role}:p));setEmployees(v=>v.map(e=>({...e,profileId:e.id===employeeId?profileId:e.profileId===profileId?undefined:e.profileId})))}}/>:<Placeholder/>}</section>
