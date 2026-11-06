@@ -35,6 +35,11 @@ export async function loadCompanyData(){
 export async function insertClient(companyId:string,data:{name:string;nif:string;email:string}){
  const r=await supabase.from('clients').insert({company_id:companyId,...data}).select('id,name,nif,email,active').single();if(r.error)throw r.error;return r.data
 }
+export async function deleteCenter(id:string){
+ const r=await supabase.from('cost_centers').delete().eq('id',id).select('id')
+ if(r.error)throw new Error(r.error.message)
+ if(!r.data?.length)throw new Error('Sem permissão para apagar este centro de custo')
+}
 export async function insertCenter(companyId:string,data:{clientId:string;code:string;name:string}){
  const r=await supabase.from('cost_centers').insert({company_id:companyId,client_id:data.clientId,code:data.code,name:data.name}).select('id,client_id,code,name,active').single();if(r.error)throw r.error;return r.data
 }
