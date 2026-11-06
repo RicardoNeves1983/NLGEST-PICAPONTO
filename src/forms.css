@@ -1,5 +1,5 @@
 .primary{display:inline-flex;align-items:center;justify-content:center;gap:7px}.primary:disabled{opacity:.5;cursor:not-allowed}
-.tr{min-width:760px;gap:14px}.client-table .tr{grid-template-columns:1.4fr .7fr 1.2fr .5fr}.center-table .tr{grid-template-columns:1.2fr .6fr 1.2fr .6fr}.people-table .tr{min-width:920px;grid-template-columns:1.1fr .7fr 1fr 1.2fr .65fr}
+.tr{min-width:760px;gap:14px}.client-table .tr{grid-template-columns:1.4fr .7fr 1.2fr .5fr}.center-table .tr{grid-template-columns:1.2fr .6fr 1.2fr .6fr .4fr}.people-table .tr{min-width:920px;grid-template-columns:1.1fr .7fr 1fr 1.2fr .65fr}
 .count-pill{font-style:normal;display:inline-grid;place-items:center;min-width:30px;height:26px;padding:0 8px;border-radius:16px;background:#eee6d9;color:#805f2b;font-weight:700}
 .inline-select{width:100%;min-width:170px;border:1px solid #ddd4c7;background:#fff;border-radius:8px;padding:9px;color:#37312a}
 .open-portal{border:1px solid #b58a49;background:#fff;color:#8a642b;border-radius:8px;padding:9px 11px;font-weight:700;white-space:nowrap;cursor:pointer}.open-portal:hover{background:#f5ecde}
