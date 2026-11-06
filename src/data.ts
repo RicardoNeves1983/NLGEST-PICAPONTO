@@ -50,7 +50,18 @@ export async function updateEmployee(id:string,data:{name:string;role:string;emp
  if(r.data.profile_id){const profile=await supabase.from('profiles').update({active:data.active}).eq('id',r.data.profile_id).eq('role','employee');if(profile.error)throw profile.error}
  return {...r.data,centerIds:data.centerIds}
 }
-export async function archiveEmployee(id:string){const r=await supabase.rpc('archive_employee',{target_employee_id:id});if(r.error)throw r.error}
+export async function archiveEmployee(id:string){
+ const r=await supabase.rpc('archive_employee',{target_employee_id:id})
+ if(!r.error)return
+ // Função SQL ainda não instalada no Supabase (migração por executar): desativa diretamente.
+ const missing=r.error.code==='PGRST202'||r.error.code==='42883'||/could not find the function|does not exist/i.test(r.error.message||'')
+ if(!missing)throw new Error(r.error.message||'Erro desconhecido')
+ const e=await supabase.from('employees').update({active:false}).eq('id',id).select('id,profile_id')
+ if(e.error)throw new Error(e.error.message)
+ if(!e.data?.length)throw new Error('Sem permissão para eliminar este colaborador')
+ const profileId=(e.data[0] as any).profile_id
+ if(profileId)await supabase.from('profiles').update({active:false}).eq('id',profileId).eq('role','employee')
+}
 
 export async function insertPunch(companyId:string,data:{employeeId:string;kind:'in'|'out';occurredAt:string;latitude?:number;longitude?:number;accuracy?:number;centerId?:string;source?:string}){
  const r=await supabase.from('punches').insert({company_id:companyId,employee_id:data.employeeId,kind:data.kind,occurred_at:data.occurredAt,latitude:data.latitude,longitude:data.longitude,accuracy_m:data.accuracy,cost_center_id:data.centerId||null,source:data.source||'web'}).select('id,employee_id,kind,occurred_at,latitude,longitude,accuracy_m,source').single();if(r.error)throw r.error;return r.data
