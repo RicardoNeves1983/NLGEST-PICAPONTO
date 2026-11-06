@@ -35,6 +35,11 @@ export async function loadCompanyData(){
 export async function insertClient(companyId:string,data:{name:string;nif:string;email:string}){
  const r=await supabase.from('clients').insert({company_id:companyId,...data}).select('id,name,nif,email,active').single();if(r.error)throw r.error;return r.data
 }
+export async function deleteClient(id:string){
+ const r=await supabase.from('clients').delete().eq('id',id).select('id')
+ if(r.error)throw new Error(r.error.message)
+ if(!r.data?.length)throw new Error('Sem permissão para apagar este cliente')
+}
 export async function deleteCenter(id:string){
  const r=await supabase.from('cost_centers').delete().eq('id',id).select('id')
  if(r.error)throw new Error(r.error.message)
