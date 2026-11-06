@@ -35,6 +35,11 @@ export async function loadCompanyData(){
 export async function insertClient(companyId:string,data:{name:string;nif:string;email:string}){
  const r=await supabase.from('clients').insert({company_id:companyId,...data}).select('id,name,nif,email,active').single();if(r.error)throw r.error;return r.data
 }
+export async function deleteEmployeePermanently(id:string){
+ const r=await supabase.from('employees').delete().eq('id',id).eq('active',false).select('id')
+ if(r.error)throw new Error(r.error.message)
+ if(!r.data?.length)throw new Error('Só é possível eliminar definitivamente colaboradores inativos, e é preciso ter permissão')
+}
 export async function deleteClient(id:string){
  const r=await supabase.from('clients').delete().eq('id',id).select('id')
  if(r.error)throw new Error(r.error.message)
